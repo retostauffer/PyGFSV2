@@ -7,7 +7,7 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2017-08-04, RS: Created file on thinkreto.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2017-08-04 18:28 on thinkreto
+# - L@ST MODIFIED: 2017-08-04 19:54 on thinkreto
 # -------------------------------------------------------------------
 
 # Initialize logger
@@ -100,11 +100,16 @@ class readConfig( object ):
          if not mtch: continue
          log.info("Reading config for \"{:s}\"".format(sec))
          try:
-            self.data[ mtch.group(1) ] = CNF.getboolean(sec,"members")
+            mem = CNF.getboolean(sec,"members")
          except Exception as e:
             log.error(e); sys.exit(9)
+         try:
+            lev = []
+            for rec in CNF.get(sec,"levels").split(","): lev.append( int(rec) )
+         except:
+            lev = None
+         self.data[ mtch.group(1) ] = {"members":mem,"levels":lev}
       
-
       # All fine
       log.info("Config file read, return.")
 

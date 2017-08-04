@@ -7,7 +7,7 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2017-08-04, RS: Created file on thinkreto.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2017-08-04 19:02 on thinkreto
+# - L@ST MODIFIED: 2017-08-04 19:56 on thinkreto
 # -------------------------------------------------------------------
 
 import logging
@@ -32,7 +32,7 @@ if __name__ == "__main__":
    
    # Looping over dates
    loopdate = config.data_from
-   while loopdate < config.data_to:
+   while loopdate <= config.data_to:
 
       # Check whether we have to download this file or not
       loopdate_mon = int(loopdate.strftime("%m"))
@@ -45,7 +45,13 @@ if __name__ == "__main__":
       # Proccessing
       log.info("Processing date {:s}".format(loopdate.strftime("%Y-%m-%d %HZ")))
 
-      for param,members in config.data.iteritems():
+      for param in config.data.keys():
+
+         # Get settings for this parameter
+         members = config.data[param]["members"]
+         levels  = config.data[param]["levels"]
+
+         # Define what to download
          if members:   types = config.data_if_members
          else:         types = config.data_ifnot_members
 
@@ -62,7 +68,7 @@ if __name__ == "__main__":
             
             # Create the range string for curl
             log.info("Downloading inventory information data")
-            inv = getInventory(config,loopdate,param,typ)
+            inv = getInventory(config,loopdate,param,typ,levels)
             if len(inv.entries) == 0:
                log.info("Inventory empty, skip this file")
                continue
@@ -101,7 +107,8 @@ if __name__ == "__main__":
                            stdout=sub.PIPE,stderr=sub.PIPE)
             out,err = p.communicate()
 
-            if os.path.isfile("{:s}.tmp"): os.remove("{:s}.tmp")
+            if os.path.isfile("{:s}.tmp".format(outfile)):
+               os.remove("{:s}.tmp".format(outfile))
 
       # Increase date
       loopdate = loopdate + dt.timedelta(1)

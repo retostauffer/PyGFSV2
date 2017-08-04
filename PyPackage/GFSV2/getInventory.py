@@ -7,7 +7,7 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2017-08-04, RS: Created file on thinkreto.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2017-08-04 19:01 on thinkreto
+# - L@ST MODIFIED: 2017-08-04 19:53 on thinkreto
 # -------------------------------------------------------------------
 
 # Initialize logger
@@ -28,16 +28,24 @@ class inventry( object ):
 
       # Matching line
       mtch = re.match("^[0-9]+:([0-9]+):d=([0-9]+):([^:]*):([^:]*):(anl|[0-9-]+).*$",line)
+      print line
 
       # Extract information
       self.bit_start = int(mtch.group(1)) 
       self.bit_end   = None
       self.date      = int(mtch.group(2))
       self.param     = mtch.group(3)
+
+      # Contains level information
       self.desc      = mtch.group(4)
-      self.step      = mtch.group(5)
+      lv = re.match("^([0-9]+)\smb$",self.desc)
+      if lv:
+         self.level = int(lv.group(1))
+      else:
+         self.level = None
 
       # Convert step. If step range: end of stpe is used
+      self.step      = mtch.group(5)
       if re.match("^[0-9]+-[0-9]+$",self.step):
          self.step = int(self.step.split("-")[1])
       elif re.match("^[0-9]+$",self.step):
@@ -53,11 +61,11 @@ class inventry( object ):
    # ----------------------------------------------------------------
    def show(self):
       if not self.bit_end == "END":
-         log.info("   INV {:10s} {:3d}  {:10d}-{:10d}".format(self.param,self.step,
-                     self.bit_start,self.bit_end))
+         log.info("   INV {:10s} {:5d}mb {:3d}  {:10d}-{:10d}".format(self.param,self.level,
+                     self.step, self.bit_start,self.bit_end))
       else:
-         log.info("   INV {:10s} {:3d}  {:10d}-   END".format(self.param,self.step,
-                     self.bit_start))
+         log.info("   INV {:10s} {:4d}mb {:3d}  {:10d}-   END".format(self.param,self.level,
+                     self.setep, self.bit_start))
 
 class getInventory( object ):
    """!This function downloads the inventory (.inv) file from the
@@ -68,9 +76,11 @@ class getInventory( object ):
    @param date. Object of class datetime (UTC).
    @param param. String, name of the parameter to download.
    @param typ. String, typ of the grib file which has to be downloaded.
+   @param level. Either NULL or a list with one or more integers to specify
+      the pressure levels for pressure level variables.
    @return Returns an object of type @ref getInventory."""
 
-   def __init__( self, config, date, param, typ ):
+   def __init__( self, config, date, param, typ, levels ):
       import sys, os, urllib
 
       inv = date.strftime(os.path.join(config.ftp_baseurl,config.ftp_filename))
@@ -106,7 +116,12 @@ class getInventory( object ):
 
          # Drop the steps we dont need!
          for rec in entries:
-            if rec.step in config.steps: self.entries.append(rec)
+            if levels is None:
+               if rec.step in config.steps:
+                  self.entries.append(rec)
+            else:
+               if rec.level in levels and rec.step in config.steps:
+                  self.entries.append(rec)
 
          # Show (devel)
          for rec in self.entries: rec.show()
