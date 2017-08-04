@@ -7,7 +7,7 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2017-08-04, RS: Created file on thinkreto.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2017-08-04 19:53 on thinkreto
+# - L@ST MODIFIED: 2017-08-04 20:02 on thinkreto
 # -------------------------------------------------------------------
 
 # Initialize logger
@@ -60,11 +60,15 @@ class inventry( object ):
    # Devel method
    # ----------------------------------------------------------------
    def show(self):
+      if self.level == None:
+         lev = "sfc"
+      else:
+         lev = "{:d}".format(self.level)
       if not self.bit_end == "END":
-         log.info("   INV {:10s} {:5d}mb {:3d}  {:10d}-{:10d}".format(self.param,self.level,
+         log.info("   INV {:10s} {:5s}mb {:3d}  {:10d}-{:10d}".format(self.param,lev,
                      self.step, self.bit_start,self.bit_end))
       else:
-         log.info("   INV {:10s} {:4d}mb {:3d}  {:10d}-   END".format(self.param,self.level,
+         log.info("   INV {:10s} {:4s}mb {:3d}  {:10d}-   END".format(self.param,lev,
                      self.setep, self.bit_start))
 
 class getInventory( object ):
