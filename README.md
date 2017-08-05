@@ -1,4 +1,5 @@
 
+
 # GFS Reforecast V2 Grib File Downloader
 
 This is a small package to download version 2 reforecasts
@@ -11,6 +12,13 @@ a handy way to do so.
 
 The **GFSV2** python package provides a set of functions and two executables
 called ``GFSV2_get`` and ``GFSV2_bulk`` for convenient data processing.
+
+## Requirements
+
+Requires the following python packages:
+* ``pycurl`` (and standard libs like ``datetime``, ``ConfigParser``, ``argparse``,``logging``)
+* If subsetting is used (see ``GFSV2_bulk``) the ``wgrib2`` executable has to be callable
+   ([see CPC wgrib2 readme](http://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/)).
 
 ## GFSV2_get executable:
 
