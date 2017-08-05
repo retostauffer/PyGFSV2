@@ -7,7 +7,7 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2017-08-04, RS: Created file on thinkreto.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2017-08-04 19:56 on thinkreto
+# - L@ST MODIFIED: 2017-08-05 10:13 on thinkreto
 # -------------------------------------------------------------------
 
 import logging
@@ -19,25 +19,45 @@ log = logging.getLogger()
 # -------------------------------------------------------------------
 if __name__ == "__main__":
 
+   # ----------------------------------------------------------------
+   # Requires one single input argument
+   # ----------------------------------------------------------------
+   import argparse, sys, os
+   helptext = """
+   This is the python package for downloading GFS reforecast V2 grib
+   file data from the NOAA CDC data server. This script is used to
+   download pre-specified sets of data wherefore a config file has
+   to be given!"""
+
+   parser = argparse.ArgumentParser(description=helptext)
+   parser.add_argument("-c","--config", default=None,
+         help="String, config file which has to be read.")
+   args = parser.parse_args()
+   if args.config is None:
+      parser.print_help(); sys.exit(1)
+   else:
+      if not os.path.isfile( args.config ):
+         log.error("Sorry, cannot find file \"{:s}\". Please check if file exists.")
+         sys.exit(1)
+   
+
+   # ----------------------------------------------------------------
+   # Read config file now
+   # ----------------------------------------------------------------
+   import datetime as dt
    from GFSV2 import *
 
-   # Read config
-   log.info("Read config file")
-   config = readConfig("config.conf")
+   # Read confg file
+   config = readConfig( args.config )
 
-   import sys, os
-   import subprocess as sub
-   import datetime as dt
-
-   
    # Looping over dates
-   loopdate = config.data_from
-   while loopdate <= config.data_to:
+   loopdate = config.main_from
+   while loopdate <= config.main_to:
 
       # Check whether we have to download this file or not
       loopdate_mon = int(loopdate.strftime("%m"))
-      if not config.data_only is None:
-         if not loopdate_mon == config.data_only:
+      if not config.main_only is None:
+         if not loopdate_mon == config.main_only:
             # Increase loopdate and continue
             loopdate = loopdate + dt.timedelta(1)
             continue
@@ -45,98 +65,8 @@ if __name__ == "__main__":
       # Proccessing
       log.info("Processing date {:s}".format(loopdate.strftime("%Y-%m-%d %HZ")))
 
-      for param in config.data.keys():
-
-         # Get settings for this parameter
-         members = config.data[param]["members"]
-         levels  = config.data[param]["levels"]
-
-         # Define what to download
-         if members:   types = config.data_if_members
-         else:         types = config.data_ifnot_members
-
-         # Downloading data
-         for typ in types:
-
-            # Define output grib file
-            outfile = loopdate.strftime(config.outfile).replace("<type>",typ).replace("<param>",param)
-            # If file exists: skip
-            if os.path.isfile(outfile): continue
-            # Else: create directory of necessary
-            outdir  = os.path.dirname(outfile)
-            if not os.path.exists(outdir): os.makedirs( outdir )
-            
-            # Create the range string for curl
-            log.info("Downloading inventory information data")
-            inv = getInventory(config,loopdate,param,typ,levels)
-            if len(inv.entries) == 0:
-               log.info("Inventory empty, skip this file")
-               continue
-
-            # Else extracting block information
-            curlrange = []
-            for rec in inv.entries:
-               if not rec.bit_end == "END":
-                  curlrange.append("{:d}-{:d}".format(rec.bit_start,rec.bit_end))
-               else:
-                  curlrange.append("{:d}-".format(rec.bit_start))
-
-            # Start downloading the file
-            import pycurl
-            c = pycurl.Curl()
-            c.setopt(pycurl.URL,inv.gribfile)
-            try:
-               fp=open("{:s}.tmp".format(outfile), "wb")
-               c.setopt(pycurl.WRITEDATA, fp)
-               c.setopt(c.NOPROGRESS, 0)
-               c.setopt(pycurl.FOLLOWLOCATION, 0)
-               log.info("Downloading -> {:s}.tmp".format(outfile))
-               for i in range(0,len(curlrange)):
-                  c.setopt(c.RANGE, curlrange[i]) 
-                  c.perform()
-               fp.close()
-            except Exception as e:
-               log.error("Problems with download")
-               log.error(e)
-               continue
-
-            # Subsetting
-            log.info("Subsetting -> {:s}".format(outfile))
-            p = sub.Popen(["wgrib2","{:s}.tmp".format(outfile),\
-                           "-small_grib",config.lonsubset,config.latsubset,outfile],
-                           stdout=sub.PIPE,stderr=sub.PIPE)
-            out,err = p.communicate()
-
-            if os.path.isfile("{:s}.tmp".format(outfile)):
-               os.remove("{:s}.tmp".format(outfile))
+      download( config, loopdate )
 
       # Increase date
       loopdate = loopdate + dt.timedelta(1)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

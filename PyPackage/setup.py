@@ -7,7 +7,7 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2017-02-05, RS: Created file on thinkreto.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2017-08-04 16:49 on thinkreto
+# - L@ST MODIFIED: 2017-08-05 10:24 on thinkreto
 # -------------------------------------------------------------------
 from setuptools import setup
 
@@ -29,10 +29,12 @@ setup(name='GFSV2',     # This is the package name
       packages=['GFSV2'],
       install_requires=[
          'ConfigParser',
+         'argparse',
+         'pydap',
          'logging'
       ],
-      #scripts=['bin/profiler_parsefile',
-      #         'bin/sodar_parsefile'],
+      scripts=['bin/GFSV2_bulk',
+               'bin/GFSV2_get'],
       include_package_data=True,
       czip_safe=False)
 

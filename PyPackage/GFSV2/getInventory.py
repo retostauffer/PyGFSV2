@@ -7,7 +7,7 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2017-08-04, RS: Created file on thinkreto.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2017-08-04 20:02 on thinkreto
+# - L@ST MODIFIED: 2017-08-05 10:20 on thinkreto
 # -------------------------------------------------------------------
 
 # Initialize logger
@@ -28,7 +28,6 @@ class inventry( object ):
 
       # Matching line
       mtch = re.match("^[0-9]+:([0-9]+):d=([0-9]+):([^:]*):([^:]*):(anl|[0-9-]+).*$",line)
-      print line
 
       # Extract information
       self.bit_start = int(mtch.group(1)) 
@@ -68,8 +67,8 @@ class inventry( object ):
          log.info("   INV {:10s} {:5s}mb {:3d}  {:10d}-{:10d}".format(self.param,lev,
                      self.step, self.bit_start,self.bit_end))
       else:
-         log.info("   INV {:10s} {:4s}mb {:3d}  {:10d}-   END".format(self.param,lev,
-                     self.setep, self.bit_start))
+         log.info("   INV {:10s} {:5s}mb {:3d}  {:10d}-   END".format(self.param,lev,
+                     self.step, self.bit_start))
 
 class getInventory( object ):
    """!This function downloads the inventory (.inv) file from the
@@ -121,9 +120,17 @@ class getInventory( object ):
          # Drop the steps we dont need!
          for rec in entries:
             if levels is None:
-               if rec.step in config.steps:
+               # If no step-subset is defined: append
+               if config.steps is None:
+                  self.entries.append(rec)
+               # Else only append if step matches user specification
+               elif rec.step in config.steps:
                   self.entries.append(rec)
             else:
+               # If no step-subset is defined: append
+               if rec.level in levels and config.steps is None:
+                  self.entries.append(rec)
+               # Else only append if step matches user specification
                if rec.level in levels and rec.step in config.steps:
                   self.entries.append(rec)
 
