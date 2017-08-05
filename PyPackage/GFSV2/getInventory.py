@@ -7,7 +7,7 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2017-08-04, RS: Created file on thinkreto.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2017-08-05 10:20 on thinkreto
+# - L@ST MODIFIED: 2017-08-05 10:49 on thinkreto
 # -------------------------------------------------------------------
 
 # Initialize logger
@@ -131,7 +131,7 @@ class getInventory( object ):
                if rec.level in levels and config.steps is None:
                   self.entries.append(rec)
                # Else only append if step matches user specification
-               if rec.level in levels and rec.step in config.steps:
+               elif rec.level in levels and rec.step in config.steps:
                   self.entries.append(rec)
 
          # Show (devel)

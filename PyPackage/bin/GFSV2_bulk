@@ -1,13 +1,20 @@
+#!/usr/bin/python
 # -------------------------------------------------------------------
-# - NAME:        download.py
+# - NAME:        GFSV2_bulk
 # - AUTHOR:      Reto Stauffer
 # - DATE:        2017-08-04
 # -------------------------------------------------------------------
-# - DESCRIPTION:
+# - DESCRIPTION: Python executable for bulk downloads. This one
+#                requires one single input which is the path to
+#                a valid config file. Downloads sets of data as
+#                specified in the config file.
+#
+#                The second executable (GFSV2_get) is to download
+#                small manually defined subsets only.
 # -------------------------------------------------------------------
 # - EDITORIAL:   2017-08-04, RS: Created file on thinkreto.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2017-08-05 10:13 on thinkreto
+# - L@ST MODIFIED: 2017-08-05 10:23 on thinkreto
 # -------------------------------------------------------------------
 
 import logging
