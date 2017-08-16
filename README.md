@@ -29,7 +29,7 @@ timeout has been received).
 
 ## Installation
 
-The [https://github.com/retostauffer/PyGFSV2](github) repository contains the
+The [github](https://github.com/retostauffer/PyGFSV2]) repository contains the
 small python package which should be ready for installation. You can simply
 install the package by calling:
 
@@ -113,8 +113,10 @@ to specify:
 * Parameters which have to be downloaded (each one can have it's own level/members specification).
 
 The default config file (used by ``GFSV2_get``) can
-[be found here](PyPackage/GFSV2/config/default.conf) and can be used as a template
-to specify the data set you need. After specification simply call:
+[be found here](GFSV2/config/default.conf) and can be used as a template
+to specify the data set you need. A second template config can be found
+in the repository called [lisa.conf](lisa.conf). After you have made a copy
+and changed the config specification simply call:
 
 * ``GFSV2_bulk --config your_config_file.conf``
 
