@@ -7,7 +7,7 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2017-08-04, RS: Created file on thinkreto.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2017-08-05 10:49 on thinkreto
+# - L@ST MODIFIED: 2017-08-13 22:24 on pc31-c707
 # -------------------------------------------------------------------
 
 # Initialize logger
@@ -97,6 +97,9 @@ class getInventory( object ):
          content = "".join(uid.readlines()).split("\n")
          uid.close()
       except Exception as e:
+         err = e.strerror.errno
+         log.error( e )
+         log.error("Return code:                     {:s}\n".format(err))
          log.error("Could not download inventory file! Skip this.")
          content = None
 
