@@ -13,6 +13,36 @@ a handy way to do so.
 The **GFSV2** python package provides a set of functions and two executables
 called ``GFSV2_get`` and ``GFSV2_bulk`` for convenient data processing.
 
+## Known "bugs"
+
+If you perform bulk actions (`GFSV2_bulk`) or try to download tons of data
+using `GFSV2_get` the ftp sever sometims respons with a timeout. The script
+currently only drops a text error on the console. This is very likely due to
+ftp access restrictions. The `GFSV2` package uses `curl` to download the data
+you need and `curl` sends several requests to the ftp server. The FTP server
+seems to block or restrict the download if too many requests are made from 
+one machine within a certain time period leading to these errors. 
+
+2017-08-17: not yet have had a good idea how to smoothly come around this
+problem (maybe force the script to sleep for a few seconds as soon as a
+timeout has been received).
+
+## Installation
+
+The [https://github.com/retostauffer/PyGFSV2](github) repository contains the
+small python package which should be ready for installation. You can simply
+install the package by calling:
+
+* `pip install git+https://github.com/retostauffer/PyGFSV2.git`
+
+The `setup.py` script should automatically take care of the depencencies
+except `wgrib2` which is used for subsetting (if config files with subset
+settings are used in `GFSV2_bulk`; see below). After installation you can try
+the installation (no subsetting) by calling:
+
+* `GFSV2_get --step 12 24 --level 700 850 --param tmp_pres --date 2005-01-01`
+
+
 ## Requirements
 
 Requires the following python packages:
