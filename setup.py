@@ -7,7 +7,7 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2017-02-05, RS: Created file on thinkreto.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2017-08-05 10:24 on thinkreto
+# - L@ST MODIFIED: 2017-08-16 07:57 on thinkreto
 # -------------------------------------------------------------------
 from setuptools import setup
 
@@ -31,6 +31,7 @@ setup(name='GFSV2',     # This is the package name
          'ConfigParser',
          'argparse',
          'pydap',
+         'pycurl',
          'logging'
       ],
       scripts=['bin/GFSV2_bulk',
