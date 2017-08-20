@@ -7,12 +7,12 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2017-02-05, RS: Created file on thinkreto.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2017-08-16 07:57 on thinkreto
+# - L@ST MODIFIED: 2017-08-20 10:54 on pc24-c707
 # -------------------------------------------------------------------
 from setuptools import setup
 
 setup(name='GFSV2',     # This is the package name
-      version='0.1-1',            # Current package version, what else
+      version='0.1-3',            # Current package version, what else
       description='GFS reforecast version 2 downloader',
       long_description='No long description necessary',
       classifiers=[

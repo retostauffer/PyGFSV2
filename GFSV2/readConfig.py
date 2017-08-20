@@ -7,7 +7,7 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2017-08-04, RS: Created file on thinkreto.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2017-08-05 10:06 on thinkreto
+# - L@ST MODIFIED: 2017-08-20 10:47 on pc24-c707
 # -------------------------------------------------------------------
 
 # Initialize logger
@@ -51,6 +51,24 @@ class readConfig( object ):
          log.error("Problems reading ftp config")
          log.error(e); sys.exit(9)
 
+      # Check if curl logfile is set (logging ftp return codes)
+      try:
+         self.curl_logfile    = CNF.get("curl","logfile")
+      except:
+         self.curl_logfile   = None
+      try:
+         self.curl_timeout    = CNF.getint("curl","timeout")
+      except:
+         self.curl_timeout   = None
+      try:
+         self.curl_retries    = CNF.getint("curl","retries")
+      except:
+         self.curl_retries   = 0
+      try:
+         self.curl_sleeptime  = CNF.getint("curl","sleeptime")
+      except:
+         self.curl_sleeptime = 0
+
       # Date range
       from datetime import datetime as dt
       try:
@@ -65,6 +83,11 @@ class readConfig( object ):
       if not self.main_only is None:
          if self.main_only < 1 or self.main_only > 12:
             sys.exit("Misspecification of [main][only] in config file.")
+
+      try:
+         self.main_sleeptime = CNF.get("main","sleeptime")
+      except:
+         self.main_sleeptime = None
 
       # Areal subset for wgrib2 --small-grib
       try:

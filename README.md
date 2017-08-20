@@ -13,10 +13,13 @@ a handy way to do so.
 The **GFSV2** python package provides a set of functions and two executables
 called ``GFSV2_get`` and ``GFSV2_bulk`` for convenient data processing.
 
+Some more details about the most recent changes can be found in the
+[CHANGELOG.md](CHANGELOG.md) file.
+
 ## Known "bugs"
 
 If you perform bulk actions (`GFSV2_bulk`) or try to download tons of data
-using `GFSV2_get` the ftp sever sometims respons with a timeout. The script
+using `GFSV2_get` the ftp sever sometimes responds with a timeout. The script
 currently only drops a text error on the console. This is very likely due to
 ftp access restrictions. The `GFSV2` package uses `curl` to download the data
 you need and `curl` sends several requests to the ftp server. The FTP server
@@ -27,6 +30,21 @@ one machine within a certain time period leading to these errors.
 problem (maybe force the script to sleep for a few seconds as soon as a
 timeout has been received).
 
+2017-08-20: added `curl` section in the config files (optional), see
+[lisa.conf](lisa.conf) or [config/default.conf](config/default.conf) files, section `curl`.
+Furthermore, an overall sleep time (see section `[main] sleeptime` has been added (optional).
+These options should help to avoid getting blacklisted if several dozens of requests
+are made. However, as the rules are unknown (`ftp.cdc.noaa.gov`) you might see what works
+for you (depending on internet speed, number of requests, ...).
+
+* `[curl] curllog`: string, logfile. If given, pycurl drops some download logs there.
+* `[curl] timeout`: integer. Custom pycurl timeout.
+* `[curl] retries`: integer. `0` (only one shot), else number of retries if download fails.
+* `[curl] sleeptime`: time in seconds to sleep if download failed (before try to download again,
+   only has an effect if `retries > 0`).
+* `[main] sleeptime`: time in seconds to sleep after each download (each file which has to be
+   downloaded; not the time to wait between two retries).
+
 ## Installation
 
 The [github](https://github.com/retostauffer/PyGFSV2]) repository contains the
@@ -35,8 +53,8 @@ install the package by calling:
 
 * `pip install git+https://github.com/retostauffer/PyGFSV2.git`
 
-The `setup.py` script should automatically take care of the depencencies
-except `wgrib2` which is used for subsetting (if config files with subset
+The `setup.py` script should automatically take care of the dependencies
+except `wgrib2` which is used for subsetting (if configuration files with subset
 settings are used in `GFSV2_bulk`; see below). After installation you can try
 the installation (no subsetting) by calling:
 
@@ -62,7 +80,7 @@ Basic usage (shows usage help):
 
 There are two required input arguments to ``GFSV2_get``. One is the ``-p/--param``
 input, the other one is the ``-d/--date`` input. Both can contain one or more
-values. ``--param`` specifies which parameters or valiables you would like to
+values. ``--param`` specifies which parameters or variables you would like to
 download, ``--date`` the dates of the model initialization. A list/description
 of [all available parameters can be found here](https://www.esrl.noaa.gov/psd/forecasts/reforecast2/README.GEFS_Reforecast2.pdf).
 The ``--date`` arguments have to be of type ``YYYY-mm-dd``. As an example
