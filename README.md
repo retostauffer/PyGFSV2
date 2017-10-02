@@ -5,10 +5,8 @@
 This is a small package to download version 2 reforecasts
 from the global forecast system (GFS). The data can be accessed
 via the NOAA CDC data server (National Oceanographic and Atmospheric Agency).
-
-This small python package was once created as I needed a specific subset
-of the reforecast over a relatively long time period and I wanted to have
-a handy way to do so.
+The package provides a handy way to access and download a specific subset
+across all reforecasts.
 
 The **GFSV2** python package provides a set of functions and two executables
 called ``GFSV2_get`` and ``GFSV2_bulk`` for convenient data processing.
@@ -16,26 +14,21 @@ called ``GFSV2_get`` and ``GFSV2_bulk`` for convenient data processing.
 Some more details about the most recent changes can be found in the
 [CHANGELOG.md](CHANGELOG.md) file.
 
-## Known "bugs"
+## Update (I blamed my script but it was the the HDD)
 
-If you perform bulk actions (`GFSV2_bulk`) or try to download tons of data
-using `GFSV2_get` the ftp sever sometimes responds with a timeout. The script
-currently only drops a text error on the console. This is very likely due to
-ftp access restrictions. The `GFSV2` package uses `curl` to download the data
-you need and `curl` sends several requests to the ftp server. The FTP server
-seems to block or restrict the download if too many requests are made from 
-one machine within a certain time period leading to these errors. 
+For those who came across this package in September 2017: I've written a
+warning that there are some unknown problems. Everyhing looks fine! The
+problem was caused by the hard drive where my scripts were running. Due to
+serious segfaults the downloader crashed relatively randomly *arrr*.
 
-2017-08-17: not yet have had a good idea how to smoothly come around this
-problem (maybe force the script to sleep for a few seconds as soon as a
-timeout has been received).
-
-2017-08-20: added `curl` section in the config files (optional), see
-[lisa.conf](lisa.conf) or [config/default.conf](config/default.conf) files, section `curl`.
-Furthermore, an overall sleep time (see section `[main] sleeptime` has been added (optional).
-These options should help to avoid getting blacklisted if several dozens of requests
-are made. However, as the rules are unknown (`ftp.cdc.noaa.gov`) you might see what works
-for you (depending on internet speed, number of requests, ...).
+While (trying to) bucktrack this issue I've added some additional settings in
+the  `curl` section in the config files (optional), see [lisa.conf](lisa.conf)
+or [config/default.conf](config/default.conf) files, section `curl`.
+Furthermore, an overall sleep time (see section `[main] sleeptime` has been
+added (optional).  These options should help to avoid getting blacklisted if
+several dozens of requests are made. However, as the rules are unknown
+(`ftp.cdc.noaa.gov`) you might see what works for you (depending on internet
+speed, number of requests, ...).
 
 * `[curl] curllog`: string, logfile. If given, pycurl drops some download logs there.
 * `[curl] timeout`: integer. Custom pycurl timeout.
