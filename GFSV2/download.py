@@ -7,7 +7,7 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2017-08-05, RS: Created file on thinkreto.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2019-01-30 21:00 on marvin
+# - L@ST MODIFIED: 2019-01-30 21:16 on marvin
 # -------------------------------------------------------------------
 
 # Initialize logger
@@ -120,7 +120,7 @@ def download( config, date ):
                   os.remove("{:s}.tmp".format(outfile))
             # Else simply move
             else:
-               os.rename("{:s}.tmp".format(outfile),outfile)
+               os.rename("{:s}.tmp".format(outfile), outfile)
 
          # Sleep if set
          if config.main_sleeptime:

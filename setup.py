@@ -7,18 +7,18 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2017-02-05, RS: Created file on thinkreto.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2019-01-30 21:06 on marvin
+# - L@ST MODIFIED: 2019-01-30 21:18 on marvin
 # -------------------------------------------------------------------
 from setuptools import setup
 
 setup(name='GFSV2',     # This is the package name
-      version='1.0-0',            # Current package version, what else
+      version='1.1-0',            # Current package version, what else
       description='GFS reforecast version 2 downloader',
       long_description='No long description necessary',
       classifiers=[
-        #'Development Status :: 3 - Alpha',
-        'Development Status :: 4 - Beta',
-        'Closed source',
+        'Development Status :: 5 - Production/Stable',
+        'Open Source',
+        'License :: GPL2',
         'Programming Language :: Python :: 2.7/3+',
       ],
       keywords='GFS reforecast',
