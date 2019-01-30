@@ -7,7 +7,7 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2017-08-05, RS: Created file on thinkreto.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2017-08-20 10:48 on pc24-c707
+# - L@ST MODIFIED: 2019-01-30 21:00 on marvin
 # -------------------------------------------------------------------
 
 # Initialize logger
@@ -102,7 +102,7 @@ def download( config, date ):
                   curllog.write(" {:s}; {:6d}; {:16s}; {:s}\n".format( nowstr,
                      int((now-timer).seconds),"ftp-error-{:d}".format(e[0]),outfile))
                if config.curl_sleeptime:
-                  log.info("Sleeping {:d} seconds and retry download".format(config.curl_sleeptime))
+                  log.info("Sleeping {:.0f} seconds and retry download".format(config.curl_sleeptime))
                   time.sleep( config.curl_sleeptime )
 
          # Only if download was successful:
@@ -124,7 +124,7 @@ def download( config, date ):
 
          # Sleep if set
          if config.main_sleeptime:
-            log.debug("Sleeping \"{:d}\" seconds before starting next download")
+            log.debug("Sleeping \"{:.0f}\" seconds before starting next download")
             time.sleep( config.main_sleeptime )
 
    # Close ftp logfile if opened beforehand

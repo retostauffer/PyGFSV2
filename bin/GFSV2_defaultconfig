@@ -1,0 +1,40 @@
+#!/usr/bin/python
+# -------------------------------------------------------------------
+# - NAME:        Rodeo-config
+# - AUTHOR:      Reto Stauffer
+# - DATE:        2016-12-30
+# -------------------------------------------------------------------
+# - DESCRIPTION: Just a small binary which allows the user to print
+#                the default config file to stdout to make a local
+#                copy if he/she wants to modify the settings.
+# -------------------------------------------------------------------
+# - EDITORIAL:   2018-08-13, RS: Created this small file.
+# -------------------------------------------------------------------
+# - L@ST MODIFIED: 2019-01-30 21:00 on marvin
+# -------------------------------------------------------------------
+
+
+if __name__ == "__main__":
+
+    import os
+    import sys
+
+    # Getting path of the config/default.conf file within the
+    # Rodeo python package.
+    resource_package = os.path.dirname(__file__)
+    file = os.path.join(resource_package,'../GFSV2/config','default.conf')
+
+    # Reading file
+    try:
+        fid = open(file, "r")
+        content = fid.readlines()
+        fid.close()
+    except Exception as e:
+        print(e)
+        print("\nSorry, cannot read default config file.")
+        print("Something's wrong in the GEFSV2_showconfig script.")
+        print("File: {:s}".format(file))
+        sys.exit(666)
+
+    # Show config
+    print("".join(content))

@@ -7,7 +7,7 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2017-08-04, RS: Created file on thinkreto.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2017-08-13 22:24 on pc31-c707
+# - L@ST MODIFIED: 2019-01-30 21:03 on marvin
 # -------------------------------------------------------------------
 
 # Initialize logger
@@ -84,7 +84,9 @@ class getInventory( object ):
    @return Returns an object of type @ref getInventory."""
 
    def __init__( self, config, date, param, typ, levels ):
-      import sys, os, urllib
+      import sys
+      import os
+      import urllib
 
       inv = date.strftime(os.path.join(config.ftp_baseurl,config.ftp_filename))
       inv = inv.replace("<type>",typ).replace("<param>",param)
@@ -93,13 +95,24 @@ class getInventory( object ):
       log.debug("Reading {:s}".format(self.invfile))
 
       try:
-         uid = urllib.urlopen(self.invfile)
-         content = "".join(uid.readlines()).split("\n")
-         uid.close()
+         if sys.version_info[0] < 3:
+            from urllib import urlopen
+            uid = urlopen(self.invfile)
+            content = "".join(uid.readlines()).split("\n")
+            uid.close()
+         else:
+            from urllib.request import urlopen
+            uid = urlopen(self.invfile)
+            content = [x.decode("UTF-8").replace("\\n", "") for x in uid.readlines()]
+            uid.close()
       except Exception as e:
-         err = e.strerror.errno
-         log.error( e )
-         log.error("Return code:                     {:s}\n".format(err))
+         if hasattr(e.strerror):
+            err = e.strerror.errno
+            log.error(e)
+            log.error("Return code:                     {:s}\n".format(err))
+         else:
+            log.error(e)
+            log.error("Return code:                     ({0}):{1}\n".format(e.strerror, e.errno))
          log.error("Could not download inventory file! Skip this.")
          content = None
 

@@ -7,7 +7,7 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2017-02-05, RS: Created file on thinkreto.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2017-10-02 15:25 on thinkreto
+# - L@ST MODIFIED: 2019-01-30 21:06 on marvin
 # -------------------------------------------------------------------
 from setuptools import setup
 
@@ -19,7 +19,7 @@ setup(name='GFSV2',     # This is the package name
         #'Development Status :: 3 - Alpha',
         'Development Status :: 4 - Beta',
         'Closed source',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 2.7/3+',
       ],
       keywords='GFS reforecast',
       url='https://git.uibk.ac.at/retos/GFSreforecastV2/',
@@ -35,7 +35,8 @@ setup(name='GFSV2',     # This is the package name
          'logging'
       ],
       scripts=['bin/GFSV2_bulk',
-               'bin/GFSV2_get'],
+               'bin/GFSV2_get',
+               'bin/GFSV2_defaultconfig'],
       include_package_data=True,
       czip_safe=False)
 

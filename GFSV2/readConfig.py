@@ -7,7 +7,7 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2017-08-04, RS: Created file on thinkreto.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2017-08-20 10:47 on pc24-c707
+# - L@ST MODIFIED: 2019-01-30 21:01 on marvin
 # -------------------------------------------------------------------
 
 # Initialize logger
@@ -32,11 +32,19 @@ class readConfig( object ):
          file = pkg_resources.resource_filename(__package__, 'config/default.conf')
          log.debug("Loading default config file from package source.")
 
-      import os, sys, re
+      import os
+      import sys
+      import re
+
       if not os.path.isfile(file): sys.exit("Config fil \"{:s}\" missing".format(file))
 
       # Import ConfigParser, read config
-      from ConfigParser import ConfigParser
+      if sys.version_info[0] < 3:
+          from ConfigParser import ConfigParser
+      else:
+          from configparser import RawConfigParser as ConfigParser
+
+      # Read the config file
       CNF = ConfigParser(); CNF.read( file )
       config = {}
       self.ftp_if_members = []; self.ftp_ifnot_members = []
@@ -65,7 +73,7 @@ class readConfig( object ):
       except:
          self.curl_retries   = 0
       try:
-         self.curl_sleeptime  = CNF.getint("curl","sleeptime")
+         self.curl_sleeptime  = CNF.getfloat("curl","sleeptime")
       except:
          self.curl_sleeptime = 0
 
@@ -85,7 +93,7 @@ class readConfig( object ):
             sys.exit("Misspecification of [main][only] in config file.")
 
       try:
-         self.main_sleeptime = CNF.get("main","sleeptime")
+         self.main_sleeptime = CNF.getfloat("main","sleeptime")
       except:
          self.main_sleeptime = None
 
