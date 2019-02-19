@@ -31,8 +31,7 @@ setup(name='GFSV2',     # This is the package name
          'ConfigParser',
          'argparse',
          'pydap',
-         'pycurl',
-         'logging'
+         'pycurl'
       ],
       scripts=['bin/GFSV2_bulk',
                'bin/GFSV2_get',
