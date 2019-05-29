@@ -106,10 +106,8 @@ class getInventory( object ):
             content = [x.decode("UTF-8").replace("\\n", "") for x in uid.readlines()]
             uid.close()
       except Exception as e:
-         if hasattr(e.strerror):
-            err = e.strerror.errno
-            log.error(e)
-            log.error("Return code:                     {:s}\n".format(err))
+         if hasattr(e, "reason"):
+            log.error("Problems reading file, reason: \"{:s}\".".format(e.reason))
          else:
             log.error(e)
             log.error("Return code:                     ({0}):{1}\n".format(e.strerror, e.errno))

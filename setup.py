@@ -12,7 +12,7 @@
 from setuptools import setup
 
 setup(name='GFSV2',     # This is the package name
-      version='1.1-0',            # Current package version, what else
+      version='1.1-1',            # Current package version, what else
       description='GFS reforecast version 2 downloader',
       long_description='No long description necessary',
       classifiers=[
