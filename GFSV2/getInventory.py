@@ -7,7 +7,7 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2017-08-04, RS: Created file on thinkreto.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2019-01-30 21:03 on marvin
+# - L@ST MODIFIED: 2020-06-05 11:03 on marvin
 # -------------------------------------------------------------------
 
 # Initialize logger
@@ -88,7 +88,7 @@ class getInventory( object ):
       import os
       import urllib
 
-      inv = date.strftime(os.path.join(config.ftp_baseurl,config.ftp_filename))
+      inv = date.strftime("{:s}/{:s}".format(config.ftp_baseurl,config.ftp_filename))
       inv = inv.replace("<type>",typ).replace("<param>",param)
       self.gribfile = "{:s}".format(inv)
       self.invfile  = "{:s}.inv".format(inv)

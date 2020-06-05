@@ -1,4 +1,7 @@
 
+# Version 1.1-2
+
+* Fixed a but occurring on windows (back slash instead of forward slash in URL)
 
 # Version 0.1-3
 
