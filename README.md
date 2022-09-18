@@ -98,7 +98,7 @@ will be downloaded. If the individual members and the control run are required
 
 Downloading two different parameters for two different dates, only +24h forecast:
 
-* ``GFSV2_get -v 12 -p tmax_2m cape_sfc -d 2014-02-01 2014-02-02 -s 24
+* ``GFSV2_get -v 12 -p tmax_2m cape_sfc -d 2014-02-01 2014-02-02 -s 24``
 
 For pressure level variables (e.g, ``ugrd_pres``, ``vgrd_pres``, ``tmp_pres``,
 ``hgt_pres`` and ``spfh_pres``
