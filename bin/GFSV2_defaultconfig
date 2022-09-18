@@ -13,16 +13,33 @@
 # - L@ST MODIFIED: 2019-01-30 21:00 on marvin
 # -------------------------------------------------------------------
 
+import logging
+import os
+import sys
+from argparse import ArgumentParser
+
+logging.basicConfig(format="# %(levelname)s %(message)s",level=logging.DEBUG)
+log = logging.getLogger()
 
 if __name__ == "__main__":
 
-    import os
-    import sys
+    desc = """Returns a basic configuration file to be used with GFSV2_get and
+    GFSV2_bulk. Please note that the script has been extended in Sept 2022 such
+    that it now allows to not only download GFS reforecasts from version 2 but
+    also GFS reforecast version 12.
+
+    Version 2 has been deprecated in September 2022 and replaced by the new
+    version 12. Note that version 12 goes back to the year 2000. However,
+    if you still want to download GFS reforecast v2 just specify 'version = 2'.
+    """
+
+    parser = ArgumentParser(description = desc)
+    args = parser.parse_args()
 
     # Getting path of the config/default.conf file within the
     # Rodeo python package.
     resource_package = os.path.dirname(__file__)
-    file = os.path.join(resource_package,'../GFSV2/config','default.conf')
+    file = os.path.join(resource_package,'../GFSV2/config', 'default.conf')
 
     # Reading file
     try:
@@ -30,11 +47,14 @@ if __name__ == "__main__":
         content = fid.readlines()
         fid.close()
     except Exception as e:
-        print(e)
-        print("\nSorry, cannot read default config file.")
-        print("Something's wrong in the GEFSV2_showconfig script.")
-        print("File: {:s}".format(file))
+        log.error(e)
+        log.error("Sorry, cannot read default config file. " + \
+                  "Something's wrong in the GEFSV2_defaultconfig script. " + \
+                  f"File: {file}")
         sys.exit(666)
 
-    # Show config
-    print("".join(content))
+    # Show config; uncomment "#version = 12" when calling this script
+    from re import sub
+    print("".join([sub(r"^#version", "version", x) for x in content]))
+
+

@@ -1,41 +1,40 @@
 # -------------------------------------------------------------------
 # - NAME:        setup.py
 # - AUTHOR:      Reto Stauffer
-# - DATE:        2017-02-05
-# -------------------------------------------------------------------
-# - DESCRIPTION: Installer for the GFSV2 python package.
-# -------------------------------------------------------------------
-# - EDITORIAL:   2017-02-05, RS: Created file on thinkreto.
-# -------------------------------------------------------------------
-# - L@ST MODIFIED: 2020-06-05 11:05 on marvin
+# - DATE:        2022-09-18
 # -------------------------------------------------------------------
 from setuptools import setup
 
-setup(name='GFSV2',     # This is the package name
-      version='1.1-2',            # Current package version, what else
-      description='GFS reforecast version 2 downloader',
-      long_description='No long description necessary',
+setup(name="GFSV2",     # This is the package name
+      version="2.0-0",            # Current package version, what else
+      description="GFS reforecast version 2 AND version 12 downloader",
+      long_description="""Small python package to simplify access to 
+      NOAAs GFS reforecast ensemble data. Originally designed for GFS reforecasts
+      version 2 which has been deprecated (still available) in September 2020.
+      Since September 2022, this package also allows to download GFS reforecast version 12
+      data. Note: For backwards compatability the default behaviour with existing config
+      files and GFSV2_get is version = 2!""",
       classifiers=[
-        'Development Status :: 5 - Production/Stable',
-        'Open Source',
-        'License :: GPL2',
-        'Programming Language :: Python :: 2.7/3+',
+        "Development Status :: 5 - Production/Stable",
+        "Open Source",
+        "License :: GPL2",
+        "Programming Language :: Python :: 3.6+",
       ],
-      keywords='GFS reforecast',
-      url='https://git.uibk.ac.at/retos/GFSreforecastV2/',
-      author='Reto Stauffer',
-      author_email='reto.stauffer@uibk.ac.at',
-      license='GPL-2',
-      packages=['GFSV2'],
+      keywords="GFS reforecast",
+      url="https://github.com/retostauffer/GFSV2",
+      author="Reto Stauffer",
+      author_email="reto.stauffer@uibk.ac.at",
+      license="GPL-2",
+      packages=["GFSV2"],
       install_requires=[
-         'ConfigParser',
-         'argparse',
-         'pydap',
-         'pycurl'
+         "ConfigParser",
+         "argparse",
+         "pydap",
+         "pycurl"
       ],
-      scripts=['bin/GFSV2_bulk',
-               'bin/GFSV2_get',
-               'bin/GFSV2_defaultconfig'],
+      scripts=["bin/GFSV2_bulk",
+               "bin/GFSV2_get",
+               "bin/GFSV2_defaultconfig"],
       include_package_data=True,
       czip_safe=False)
 

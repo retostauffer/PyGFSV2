@@ -41,13 +41,10 @@ if __name__ == "__main__":
          help="String, config file which has to be read.")
    args = parser.parse_args()
    if args.config is None:
-      parser.print_help(); sys.exit(1)
+      parser.print_help()
+      sys.exit(9)
    else:
-      if not os.path.isfile(args.config):
-         log.error("Sorry, cannot find file \"{:s}\". Please check if file exists.".format(
-                args.config))
-         sys.exit(1)
-   
+      assert os.path.isfile(args.config), FileNotFoundError(f"Config file {args.config} not found")
 
    # ----------------------------------------------------------------
    # Read config file now
@@ -56,7 +53,8 @@ if __name__ == "__main__":
    from GFSV2 import *
 
    # Read confg file
-   config = readConfig( args.config )
+   config = readConfig(args.config)
+   config.show()
 
    # Looping over dates
    skipped = 0

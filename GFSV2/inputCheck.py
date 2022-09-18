@@ -1,13 +1,9 @@
 # -------------------------------------------------------------------
 # - NAME:        inputCheck.py
 # - AUTHOR:      Reto Stauffer
-# - DATE:        2017-08-05
+# - DATE:        2022-09-18
 # -------------------------------------------------------------------
-# - DESCRIPTION:
-# -------------------------------------------------------------------
-# - EDITORIAL:   2017-08-05, RS: Created file on thinkreto.
-# -------------------------------------------------------------------
-# - L@ST MODIFIED: 2017-08-05 10:50 on thinkreto
+# - DESCRIPTION: Parsing input arguments for console tools.
 # -------------------------------------------------------------------
 
 # Initialize logger
@@ -24,11 +20,19 @@ class inputCheck( object ):
    def __init__( self ):
 
       helptext = """
-      Downloading GFS reforecast V2 grib file data from the NOAA CDC
-      data servers. This script can be used to download smaller manually
+      Downloading GFS reforecast grib file data. Originally designed
+      to download GFS reforecast V2 from from the NOAA CDC data servers.
+
+      The script has been adjusted in September 2022 to allow downloading GFS
+      reforecasts version 12 via an amazon S3 bucket. The version to be
+      downloaded can be specified via -v/--version (GFSV2_get) or is retrieved
+      via the config file when using GFSV2_bulk, see description provided by
+      GFSV2_bulk -h.
+
+      This script can be used to download smaller manually
       specified sets of data. Please have a look at GFSV2_bulk if you
       need to download larger amounts of data. The bulk script allows for
-      more detailed specifications based on a simple config file.      
+      more detailed specifications based on a simple config file.
       """
       import argparse, sys
 
@@ -37,8 +41,13 @@ class inputCheck( object ):
       parser.add_argument("--verbose", action="store_true",default=False,
             help="Increase output verbosity.")
       # Parameter name, multiple are allowed
+      parser.add_argument("-v", "--version", default = None, type = int,
+            help="Specify the version of the GFS reforecast ensemble. " + \
+                 "Either '2' or '12', defaults to '2' for backwards compatability.")
       parser.add_argument("-m","--members",default=False,action="store_true",
-            help="If True the individual members (plus control forecast) will " + \
+            help="Only available for --version 2. Version 12 will always return the individual " + \
+                 "members and the control run (mean/sprd not available). " + \
+                 "If True the individual members (plus control forecast) will " + \
                  "be downloaded. If False only mean/sprd will be downloaded. ")
       parser.add_argument("-l","--levels",nargs="+",type=int, default=None,
             help="Integer, levels which should be downloaded. If not set surface variables " + \
@@ -56,6 +65,16 @@ class inputCheck( object ):
       # Parse and store
       args = parser.parse_args()
       self._inputs_ = args
+
+      # Version specification
+      if not args.version:
+          log.warning("-v/--version not specified, defaulting to version 2 (consider using the newer version 12 by specifying --version 12")
+          args.version = 2
+
+      # Set members to True if version is 12
+      if args.version == 12 and not args.members:
+          log.warning("--version 12 always uses --members True, mean/sprd not available")
+          args.members = True
 
       # Check required inputs
       check = self._check_req_()

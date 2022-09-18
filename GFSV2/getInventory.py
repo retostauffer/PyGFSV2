@@ -14,22 +14,36 @@
 import logging, logging.config
 log = logging.getLogger("GFSV2.getInventory")
 
-class inventry( object ):
-   """!Helper object to store inventory data.
+class inventry:
+   """Helper object to store inventory data.
    Each inventory object represents one message or one line
    in the inventory file. Extract required information.
-   @param line. String, line out of the inventory file.
-   @return No return, saves information internally."""
+
+   Params
+   ------
+   gribfile : str
+        URL of the file which contains the content specified by 'line'.
+   line : str
+        String read from the inventory file.
+
+   Return
+   ------
+   No return, saves information internally.
+   """
 
    # ----------------------------------------------------------------
    # ----------------------------------------------------------------
-   def __init__( self, line ):
-      import re, sys
+   def __init__(self, gribfile, line):
+
+      assert isinstance(gribfile, str), TypeError("Argument 'gribfile' must be string")
+      assert isinstance(line, str), TypeError("Argument 'line' must be string")
 
       # Matching line
+      import re
       mtch = re.match("^[0-9]+:([0-9]+):d=([0-9]+):([^:]*):([^:]*):(anl|[0-9-]+).*$",line)
 
       # Extract information
+      self.gribfile  = gribfile
       self.bit_start = int(mtch.group(1)) 
       self.bit_end   = None
       self.date      = int(mtch.group(2))
@@ -59,97 +73,130 @@ class inventry( object ):
    # Devel method
    # ----------------------------------------------------------------
    def show(self):
+      from os.path import basename
+
       if self.level == None:
          lev = "sfc"
       else:
          lev = "{:d}".format(self.level)
-      if not self.bit_end == "END":
-         log.info("   INV {:10s} {:5s}mb {:3d}  {:10d}-{:10d}".format(self.param,lev,
-                     self.step, self.bit_start,self.bit_end))
-      else:
-         log.info("   INV {:10s} {:5s}mb {:3d}  {:10d}-   END".format(self.param,lev,
-                     self.step, self.bit_start))
 
-class getInventory( object ):
-   """!This function downloads the inventory (.inv) file from the
+      if not self.bit_end == "END":
+         log.info(f"   INV {self.param:10s} {lev:5s}mb {self.step:3d}  {self.bit_start:10d}-{self.bit_end:10d}  in  {self.gribfile}")
+      else:
+         log.info(f"   INV {self.param:10s} {lev:5s}mb {self.step:3d}  {self.bit_start:10d}-   END  in  {self.gribfile}")
+
+class getInventory:
+   """This function downloads the inventory (.inv) file from the
    ftp server and parses the information. This is used to partially
    download the grib2 files on the ftp server rather than downloading
    the whole grib file.
-   @param config. Object of class @ref readConfig.
-   @param date. Object of class datetime (UTC).
-   @param param. String, name of the parameter to download.
-   @param typ. String, typ of the grib file which has to be downloaded.
-   @param level. Either NULL or a list with one or more integers to specify
-      the pressure levels for pressure level variables.
-   @return Returns an object of type @ref getInventory."""
 
-   def __init__( self, config, date, param, typ, levels ):
+   Params
+   ------
+   config : GFSV2.readConfig.readConfig
+        Object as returned by the readConfig function.
+   date : datetime.datetime
+        Object of class datetime.datetime.
+   param : str
+        Name of the parameter to be downloaded.
+   typ : str
+        Type of the grib file which has to be downloaded.
+   level : None or list
+        Either None or a list with one or more integers to specify
+        the pressure levels for pressure level variables.
+
+   Return
+   ------
+   getInventory : Returns an object of type @ref getInventory.
+   """
+
+   def __init__(self, config, date, param, typ, levels):
       import sys
       import os
       import urllib
+      from datetime import datetime as dt
+      from GFSV2.readConfig import readConfig
 
-      inv = date.strftime("{:s}/{:s}".format(config.ftp_baseurl,config.ftp_filename))
-      inv = inv.replace("<type>",typ).replace("<param>",param)
-      self.gribfile = "{:s}".format(inv)
-      self.invfile  = "{:s}.inv".format(inv)
-      log.debug("Reading {:s}".format(self.invfile))
+      assert isinstance(config, readConfig), TypeError("Argument 'config' must be of type GFSV2.readConfig.readConfig")
+      assert isinstance(date, dt), TypeError("Argument 'date' must be of type datetime.datetime")
+      assert isinstance(param, str), TypeError("Argument 'param' must be string")
+      assert isinstance(typ, str), TypeError("Argument 'typ' must be string")
+      assert isinstance(levels, (type(None), list)), TypeError("Argument 'level' must be None or list")
 
-      try:
-         if sys.version_info[0] < 3:
-            from urllib import urlopen
-            uid = urlopen(self.invfile)
-            content = "".join(uid.readlines()).split("\n")
-            uid.close()
-         else:
-            from urllib.request import urlopen
-            uid = urlopen(self.invfile)
-            content = [x.decode("UTF-8").replace("\\n", "") for x in uid.readlines()]
-            uid.close()
-      except Exception as e:
-         if hasattr(e, "reason"):
-            log.error("Problems reading file, reason: \"{:s}\".".format(e.reason))
-         else:
-            log.error(e)
-            log.error("Return code:                     ({0}):{1}\n".format(e.strerror, e.errno))
-         log.error("Could not download inventory file! Skip this.")
-         content = None
+      if config.version == 2:
+          inv = [date.strftime("{:s}/{:s}".format(config.ftp_baseurl, config.ftp_filename))]
+          inv_postfix = "inv"
+      elif config.version == 12:
+          inv = [date.strftime("{:s}/{:s}".format(config.s3_baseurl, config.s3_filename)),
+                 date.strftime("{:s}/{:s}".format(config.s3_baseurl, config.s3_filename))]
+          inv[0] = inv[0].replace("<days>", "Days:1-10")
+          inv[1] = inv[1].replace("<days>", "Days:10-16")
+          inv_postfix = "idx"
+      else:
+          raise NotImplementedError(f"No implementation for handling GFS version {config.version}")
 
-      # If we have got content
+      inv = [x.replace("<type>",typ).replace("<param>",param) for x in inv]
+      self.gribfile = inv
+      self.invfile  = [f"{x}.{inv_postfix}" for x in inv]
+
+      log.debug(f"Reading inventory files {', '.join(self.invfile)}")
+
+      # List to store elements needed
       self.entries = []
-      if not content == None:
-         entries = []
-         for line in content:
-            if len(line.strip())==0: continue
-            entries.append( inventry(line) )
 
-         # Each inventry only contains the bit where the message
-         # starts, not the bit where the message ends. Save "bit where the
-         # next message starts - 1" to each of them to specify the range
-         for i in range(len(entries)-1,-1,-1):
-            if i == (len(entries)-1):
-               entries[i].bit_end = "END" # go to the end
-            else:
-               entries[i].bit_end = entries[i+1].bit_start - 1
+      # Reading inventory file(s). In case of GFS reforecast version 12
+      # there are two separate files, one for Days:1-10 and one for Days:10-16
+      for i in range(len(self.invfile)):
 
-         # Drop the steps we dont need!
-         for rec in entries:
-            if levels is None:
-               # If no step-subset is defined: append
-               if config.steps is None:
-                  self.entries.append(rec)
-               # Else only append if step matches user specification
-               elif rec.step in config.steps:
-                  self.entries.append(rec)
-            else:
-               # If no step-subset is defined: append
-               if rec.level in levels and config.steps is None:
-                  self.entries.append(rec)
-               # Else only append if step matches user specification
-               elif rec.level in levels and rec.step in config.steps:
-                  self.entries.append(rec)
+        try:
+           from urllib.request import urlopen
+           uid = urlopen(self.invfile[i])
+           content = [x.decode("UTF-8").replace("\\n", "") for x in uid.readlines()]
+           uid.close()
+        except Exception as e:
+           if hasattr(e, "reason"):
+              log.error(f"Problems reading {url}, reason: \"{e.reason}\"")
+           else:
+              log.error(e)
+              log.error(f"Return code:                     ({e.strerror}:{e.errno})")
+           log.error("Could not download inventory file! Skip this.")
+           content = None
 
-         # Show (devel)
-         for rec in self.entries: rec.show()
+        # If we have got content
+        if not content == None:
+           entries = []
+           for line in content:
+              if len(line.strip()) == 0: continue
+              entries.append(inventry(self.gribfile[i], line))
+
+           # Each inventry only contains the bit where the message
+           # starts, not the bit where the message ends. Save "bit where the
+           # next message starts - 1" to each of them to specify the range
+           for i in range(len(entries) -1, -1, -1):
+              if i == (len(entries) - 1):
+                 entries[i].bit_end = "END" # go to the end
+              else:
+                 entries[i].bit_end = entries[i+1].bit_start - 1
+
+           # Drop the steps we dont need!
+           for rec in entries:
+              if levels is None:
+                 # If no step-subset is defined: append
+                 if config.steps is None:
+                    self.entries.append(rec)
+                 # Else only append if step matches user specification
+                 elif rec.step in config.steps:
+                    self.entries.append(rec)
+              else:
+                 # If no step-subset is defined: append
+                 if rec.level in levels and config.steps is None:
+                    self.entries.append(rec)
+                 # Else only append if step matches user specification
+                 elif rec.level in levels and rec.step in config.steps:
+                    self.entries.append(rec)
+
+      # Show entries/fields to be downloaded
+      for rec in self.entries: rec.show()
 
 
 

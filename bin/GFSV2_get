@@ -34,9 +34,12 @@ if __name__ == "__main__":
    inputs = inputCheck()
 
    # Read default config file
-   config = readConfig()
-   config.data = inputs.get("data")
+   config       = readConfig(force_version = inputs.get("version"))
+   config.data  = inputs.get("data")
    config.steps = inputs.get("steps")
+
+   # Overrule 'version' from configfile with user input
+   if inputs.get("version"): config.version = inputs.get("version")
 
    # Looping over dates
    for date in inputs.get("dates"):
@@ -44,5 +47,5 @@ if __name__ == "__main__":
       # Proccessing
       log.info("Processing date {:s}".format(date.strftime("%Y-%m-%d %HZ")))
 
-      download( config, date )
+      download(config, date)
 

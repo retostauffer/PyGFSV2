@@ -1,4 +1,8 @@
 
 
-# Ignore
 data
+*.swp
+/GFSV2.egg-info
+/build
+/dist
+
